@@ -8,6 +8,7 @@ def select_query(client):
     results = cursor.fetchall()
     return len(results)
 
+
 @pytest.mark.benchmark(
     group="group-name",
     min_time=0.1,

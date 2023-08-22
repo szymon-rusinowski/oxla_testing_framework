@@ -4,6 +4,7 @@ import time
 import psycopg2
 import random
 
+
 @pytest.fixture(scope="session")
 def setup_test_containers(request):
     sh.sh(_in="docker-compose --profile test up -d")
@@ -14,18 +15,19 @@ def setup_test_containers(request):
     finally:
         sh.sh(_in="docker-compose --profile test down -t0")
 
-@pytest.fixture(scope="class")
+
 def data_generator(entries=100):
     size = [*range(1, entries)]
-    func_name = ["'Numeric'","'String'","'Boolean'"]
-    func_sub = ["'ABS'","'CEIL'","'LENGTH'","'IF'","'SQRT'"]
+    func_name = ["'Numeric'", "'String'", "'Boolean'"]
+    func_sub = ["'ABS'", "'CEIL'", "'LENGTH'", "'IF'", "'SQRT'"]
 
     list_of_tuples = [(random.choice(func_sub), random.choice(func_name)) for _ in size]
 
     result_string = ""
     for tup in list_of_tuples:
         result_string += f"({tup[0]}, {tup[1]}),"
-    return(result_string[:-1])
+    return result_string[:-1]
+
 
 @pytest.fixture(scope="session")
 def erase_oxla(setup_oxla):
@@ -47,9 +49,9 @@ def erase_pg(setup_oxla):
 def setup_oxla(oxla_client):
     cursor = oxla_client
     cursor.execute("CREATE TABLE oxlafunctions(func_name string,func_sub string);")
-   # cursor.execute(
-   #     "INSERT INTO oxlafunctions VALUES('Numeric', 'ABS'),('Numeric', 'CEIL'),('String', 'LENGTH'),('Numeric', 'SQRT'),('Boolean', 'IF'),('String', 'STRPOS'),('Numeric', 'FLOOR'),('String', 'CONCAT'),('String', 'LOWER');"
-#    )
+    # cursor.execute(
+    #     "INSERT INTO oxlafunctions VALUES('Numeric', 'ABS'),('Numeric', 'CEIL'),('String', 'LENGTH'),('Numeric', 'SQRT'),('Boolean', 'IF'),('String', 'STRPOS'),('Numeric', 'FLOOR'),('String', 'CONCAT'),('String', 'LOWER');"
+    #    )
     sql_string = "INSERT INTO oxlafunctions VALUES" + data_generator(entries=100) + ";"
     cursor.execute(sql_string)
     yield cursor
@@ -61,9 +63,9 @@ def setup_pg(pg_client):
     cursor.execute(
         "CREATE TABLE oxlafunctions(func_name varchar(255), func_sub varchar(255));"
     )
-#    cursor.execute(
-#        "INSERT INTO oxlafunctions VALUES('Numeric', 'ABS'),('Numeric', 'CEIL'),('String', 'LENGTH'),('Numeric', 'SQRT'),('Boolean', 'IF'),('String', 'STRPOS'),('Numeric', 'FLOOR'),('String', 'CONCAT'),('String', 'LOWER');"
- #   )
+    #    cursor.execute(
+    #        "INSERT INTO oxlafunctions VALUES('Numeric', 'ABS'),('Numeric', 'CEIL'),('String', 'LENGTH'),('Numeric', 'SQRT'),('Boolean', 'IF'),('String', 'STRPOS'),('Numeric', 'FLOOR'),('String', 'CONCAT'),('String', 'LOWER');"
+    #   )
     sql_string = "INSERT INTO oxlafunctions VALUES" + data_generator(entries=100) + ";"
     cursor.execute(sql_string)
 
