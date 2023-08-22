@@ -1,0 +1,56 @@
+version: '3.5'
+
+networks:
+  test_network:
+    name: ${NETWORK_NAME}
+
+services:
+  #  test_suit:
+  #    profiles:
+  #      - "dev"
+  #      - "test"
+  #    build:
+  #      context: ./
+  #      dockerfile: Dockerfile
+  #      target: development
+  #    volumes:
+  #      - ./tests:/test
+  #      - ./entrypoint.sh:/entrypoint.sh
+  #    entrypoint:
+  #      - ./entrypoint.sh
+  #    networks:
+  #      - test_network
+  pgreference:
+    profiles:
+      - "dev"
+      - "test"
+    image: 'postgres:14'
+    volumes:
+      - pgdata1:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - 5430:5432
+    networks:
+      - test_network
+  oxlanode:
+    profiles:
+      - "dev"
+      - "test"
+    image: public.ecr.aws/oxla/release:latest
+    security_opt:
+      - seccomp:unconfined
+    ulimits:
+      nofile:
+        soft: 40000
+        hard: 40000
+    volumes:
+      - oxla_data:/data
+    ports:
+      - 5426:5432
+    networks:
+      - test_network
+
+volumes:
+  pgdata1:
+  oxla_data:
